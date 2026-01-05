@@ -219,7 +219,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      users_share_pool: {
+        Args: { target_id: string; viewer_id: string }
+        Returns: boolean
+      }
     }
     Enums: {
       [_ in never]: never
