@@ -9,6 +9,7 @@ import Dashboard from "./pages/Dashboard";
 import CreateServer from "./pages/CreateServer";
 import CreatePool from "./pages/CreatePool";
 import JoinPool from "./pages/JoinPool";
+import PoolDetail from "./pages/PoolDetail";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -26,6 +27,7 @@ const App = () => (
           <Route path="/servers/new" element={<CreateServer />} />
           <Route path="/pools/new" element={<CreatePool />} />
           <Route path="/join/:inviteCode" element={<JoinPool />} />
+          <Route path="/pools/:poolId" element={<PoolDetail />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
