@@ -18,6 +18,30 @@ import {
   Code
 } from "lucide-react";
 
+const minecraftVersions = [
+  "1.21.4", "1.21.3", "1.21.2", "1.21.1", "1.21",
+  "1.20.6", "1.20.5", "1.20.4", "1.20.3", "1.20.2", "1.20.1", "1.20",
+  "1.19.4", "1.19.3", "1.19.2", "1.19.1", "1.19",
+  "1.18.2", "1.18.1", "1.18",
+  "1.17.1", "1.17",
+  "1.16.5", "1.16.4", "1.16.3", "1.16.2", "1.16.1", "1.16",
+  "1.12.2", "1.8.9", "1.7.10"
+];
+
+const minecraftServerTypes = [
+  { id: "vanilla", name: "Vanilla", description: "Official Minecraft server" },
+  { id: "paper", name: "Paper", description: "High performance fork of Spigot" },
+  { id: "purpur", name: "Purpur", description: "Paper fork with more features" },
+  { id: "spigot", name: "Spigot", description: "Modified server with plugin support" },
+  { id: "bukkit", name: "Bukkit", description: "Classic plugin-based server" },
+  { id: "fabric", name: "Fabric", description: "Lightweight modding toolchain" },
+  { id: "forge", name: "Forge", description: "Popular modding platform" },
+  { id: "velocity", name: "Velocity", description: "Modern proxy server" },
+  { id: "bungeecord", name: "BungeeCord", description: "Proxy for linking servers" },
+  { id: "waterfall", name: "Waterfall", description: "BungeeCord fork by Paper" },
+  { id: "sponge", name: "Sponge", description: "Plugin API for Forge/Vanilla" },
+];
+
 const gameTypes = [
   { id: "minecraft", name: "Minecraft", icon: Pickaxe, color: "cyan" },
   { id: "terraria", name: "Terraria", icon: Swords, color: "magenta" },
@@ -28,6 +52,8 @@ const gameTypes = [
 const CreateServer = () => {
   const [name, setName] = useState("");
   const [gameType, setGameType] = useState("");
+  const [mcServerType, setMcServerType] = useState("paper");
+  const [mcVersion, setMcVersion] = useState("1.21.4");
   const [description, setDescription] = useState("");
   const [maxPlayers, setMaxPlayers] = useState("10");
   const [port, setPort] = useState("");
@@ -55,10 +81,15 @@ const CreateServer = () => {
         return;
       }
 
+      // For Minecraft, store the server type and version in game_type
+      const finalGameType = gameType === "minecraft" 
+        ? `minecraft:${mcServerType}:${mcVersion}` 
+        : gameType;
+
       const { error } = await supabase.from("servers").insert({
         owner_id: user.id,
         name,
-        game_type: gameType,
+        game_type: finalGameType,
         description: description || null,
         max_players: parseInt(maxPlayers) || 10,
         port: port ? parseInt(port) : null,
@@ -146,6 +177,50 @@ const CreateServer = () => {
                 })}
               </div>
             </div>
+
+            {/* Minecraft Server Type & Version (shown only when Minecraft is selected) */}
+            {gameType === "minecraft" && (
+              <>
+                <div className="space-y-3">
+                  <Label className="text-foreground">Server Type *</Label>
+                  <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
+                    {minecraftServerTypes.map((type) => (
+                      <button
+                        key={type.id}
+                        type="button"
+                        onClick={() => setMcServerType(type.id)}
+                        className={`p-3 rounded-lg border transition-all text-left ${
+                          mcServerType === type.id
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-border hover:border-primary/50 text-muted-foreground hover:text-foreground"
+                        }`}
+                      >
+                        <span className="font-semibold text-sm block">{type.name}</span>
+                        <span className="text-xs opacity-70">{type.description}</span>
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="mcVersion" className="text-foreground">
+                    Minecraft Version *
+                  </Label>
+                  <select
+                    id="mcVersion"
+                    value={mcVersion}
+                    onChange={(e) => setMcVersion(e.target.value)}
+                    className="w-full h-10 px-3 rounded-md bg-input border border-border text-foreground focus:border-primary focus:outline-none"
+                  >
+                    {minecraftVersions.map((version) => (
+                      <option key={version} value={version}>
+                        {version}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              </>
+            )}
 
             {/* Server Name */}
             <div className="space-y-2">
